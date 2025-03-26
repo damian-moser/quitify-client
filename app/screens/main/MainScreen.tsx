@@ -16,7 +16,7 @@ interface MainScreenProps {
 const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Willkommen zur Quittungscanner-App!</Text>
+      <Text style={styles.header}>Willkommen zu Quitify!</Text>
       <Text style={styles.body}>
         Scanne deine Quittungen, um sie zu speichern und später darauf zuzugreifen.
       </Text>
@@ -43,18 +43,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#6200EE',
+    color: '#000000',
   },
   body: {
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
-    color: '#828282',
+    color: '#000000',
   },
   footer: {
     marginTop: 30,
     fontSize: 14,
-    color: '#6200EE',
+    color: '#000000',
   },
 });
 
