@@ -1,39 +1,54 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: '#6200EE',
+        tabBarInactiveTintColor: '#828282',
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="screens/Main/MainScreen"
+        options={{
+          title: 'Main',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="grid-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="screens/Scan/ScanScreen"
+        options={{
+          title: 'Scan',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="scan-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="screens/Account/AccountScreen"
+        options={{
+          title: 'Account',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
