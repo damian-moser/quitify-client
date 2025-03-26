@@ -1,15 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-// Typ für die Navigation
-type MainScreenNavigationProp = NativeStackNavigationProp<any, any>;
-
-type Props = {
-  navigation: MainScreenNavigationProp;
+type RootStackParamList = {
+  MainScreen: undefined;
+  ScanScreen: undefined;
 };
 
-const MainScreen = ({ navigation }: Props) => {
+type MainScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainScreen'>;
+
+interface MainScreenProps {
+  navigation: MainScreenNavigationProp;
+}
+
+const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Willkommen zur Quittungscanner-App!</Text>
@@ -19,7 +23,7 @@ const MainScreen = ({ navigation }: Props) => {
 
       <Button
         title="Quittung Scannen"
-        onPress={() => navigation.navigate('screens/Scan/ScanScreen')}
+        onPress={() => navigation.navigate('ScanScreen')} 
       />
 
       <Text style={styles.footer}>Erstelle, speichere und verwalte deine Quittungen.</Text>
