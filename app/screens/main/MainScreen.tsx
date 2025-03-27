@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import  Header from '../../../components/Header';
+
 
 type RootStackParamList = {
   MainScreen: undefined;
@@ -16,6 +18,7 @@ interface MainScreenProps {
 const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
+      <Header navigation={navigation} />
       <Text style={styles.header}>Willkommen zu Quitify!</Text>
       <Text style={styles.body}>
         Scanne deine Quittungen, um sie zu speichern und später darauf zuzugreifen.
