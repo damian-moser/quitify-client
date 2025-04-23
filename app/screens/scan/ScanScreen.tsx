@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 export default function App() {
-  const [facing, setFacing] = useState<CameraType>("back");
+  const [facing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [photo, setPhoto] = useState<string | null>(null);
