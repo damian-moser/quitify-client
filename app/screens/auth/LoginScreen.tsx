@@ -10,9 +10,31 @@ export default function LoginPage() {
     return <RegisterPage setIsRegister={setIsRegister} />;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Eingeloggt mit:", email, password);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/sign-in", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: email,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login fehlgeschlagen");
+      }
+
+      const data = await response.json();
+      console.log("Erfolgreich eingeloggt:", data);
+    } catch (error) {
+      console.error("Fehler beim Login:", error);
+      alert("Login fehlgeschlagen. Bitte überprüfe deine Eingaben.");
+    }
   };
 
   return (
