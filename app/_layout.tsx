@@ -3,10 +3,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 import MainScreen from "./screens/main/MainScreen";
 import { Button } from "react-native";
 import LoginScreen from "./screens/auth/LoginScreen";
-// import AccountScreen from './screens/Account/AccountScreen';
-// import ScanScreen from './screens/scan/ScanScreen';
+import ScanScreen from "./screens/scan/ScanScreen";
 
-const Stack = createStackNavigator();
+type RootStackParamList = {
+  MainScreen: undefined;
+  LoginScreen: undefined;
+  ScanScreen: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default function Layout() {
   return (
@@ -23,6 +28,16 @@ export default function Layout() {
             />
           ),
         })}
+      />
+      <Stack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{ title: "Login" }}
+      />
+      <Stack.Screen
+        name="ScanScreen"
+        component={ScanScreen}
+        options={{ title: "Scan" }}
       />
     </Stack.Navigator>
   );

@@ -7,6 +7,7 @@ import Header from "../../../components/Header";
 type RootStackParamList = {
   MainScreen: undefined;
   ScanScreen: undefined;
+  LoginScreen: undefined;
 };
 
 type MainScreenNavigationProp = StackNavigationProp<

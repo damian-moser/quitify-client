@@ -36,7 +36,9 @@ export default function LoginPage() {
             required
             style={styles.input}
           />
-          <button type="submit" style={styles.button}>Anmelden</button>
+          <button type="submit" style={styles.button}>
+            Anmelden
+          </button>
         </form>
         <p style={styles.switchText}>
           Noch kein Konto?{" "}
