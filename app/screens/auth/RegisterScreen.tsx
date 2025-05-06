@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "react-native";
 
-const LoginPage = ({ navigation }) => {
+const RegisterScreen = ({ navigation }) => {
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -9,32 +10,41 @@ const LoginPage = ({ navigation }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/sign-in", {
+      const response = await fetch("http://localhost:8080/api/auth/sign-up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          displayName: displayName,
           username: email,
           password: password,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Login fehlgeschlagen");
+        throw new Error("Registrierung fehlgeschlagen");
       }
       navigation.navigate("MainScreen");
     } catch (error) {
-      console.error("Fehler beim Login:", error);
-      alert("Login fehlgeschlagen. Bitte überprüfe deine Eingaben.");
+      console.error("Fehler beim Register:", error);
+      alert("Registrieren fehlgeschlagen. Bitte überprüfe deine Eingaben.");
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>Login</h2>
-        <form onSubmit={handleSubmit} style={styles.form}>
+        <h2 style={styles.title}>Registrieren</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Benutzername"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            required
+            style={styles.input}
+          />
           <input
             type="email"
             placeholder="Email"
@@ -52,14 +62,14 @@ const LoginPage = ({ navigation }) => {
             style={styles.input}
           />
           <button type="submit" style={styles.button}>
-            Anmelden
+            Registrieren
           </button>
         </form>
         <p style={styles.switchText}>
-          Noch kein Konto?{" "}
+          Bereits ein Konto?{" "}
           <Button
-            title="Registrieren"
-            onPress={() => navigation.navigate("RegisterScreen")}
+            title="Login"
+            onPress={() => navigation.navigate("LoginScreen")}
           />
         </p>
       </div>
@@ -67,9 +77,9 @@ const LoginPage = ({ navigation }) => {
   );
 };
 
-export default LoginPage;
+export default RegisterScreen;
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = {
   container: {
     display: "flex",
     justifyContent: "center",
@@ -82,16 +92,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "20px",
     borderRadius: "8px",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
+    alignItems: "center",
     width: "300px",
   },
   title: {
     fontSize: "24px",
     marginBottom: "20px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
   },
   input: {
     padding: "10px",
@@ -101,7 +107,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "16px",
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#28a745",
     color: "white",
     padding: "10px",
     border: "none",

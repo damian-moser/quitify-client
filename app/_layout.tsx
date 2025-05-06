@@ -4,11 +4,13 @@ import MainScreen from "./screens/main/MainScreen";
 import { Button } from "react-native";
 import LoginScreen from "./screens/auth/LoginScreen";
 import ScanScreen from "./screens/scan/ScanScreen";
+import RegisterScreen from "./screens/auth/RegisterScreen";
 
 type RootStackParamList = {
   MainScreen: undefined;
   LoginScreen: undefined;
   ScanScreen: undefined;
+  RegisterScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -32,6 +34,11 @@ export default function Layout() {
       <Stack.Screen
         name="LoginScreen"
         component={LoginScreen}
+        options={{ title: "Login" }}
+      />
+      <Stack.Screen
+        name="RegisterScreen"
+        component={RegisterScreen}
         options={{ title: "Login" }}
       />
       <Stack.Screen
