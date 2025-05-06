@@ -30,9 +30,39 @@ export default function App() {
     );
   }
 
+  const processImage = async () => {
+    if (!photo) return;
+
+    const response = await fetch(photo);
+    const blob = await response.blob();
+
+    const formData = new FormData();
+    formData.append("multipartFile", blob, "receipt.png");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/ocr", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Fehlgeschlagen");
+      }
+
+      const result = await response.json();
+      console.log(result);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   const takePhoto = async () => {
     if (cameraRef.current) {
-      const picture = await cameraRef.current.takePictureAsync();
+      const picture = await cameraRef.current.takePictureAsync({
+        quality: 1,
+        base64: true,
+        exif: true,
+      });
       if (picture && picture.uri) {
         setPhoto(picture.uri);
       } else {
@@ -46,7 +76,15 @@ export default function App() {
       {photo ? (
         <View style={styles.container}>
           <Image source={{ uri: photo }} style={styles.camera} />
-          <Button title="Take another photo" onPress={() => setPhoto(null)} />
+          <Button
+            color={"#000"}
+            title="verwenden"
+            onPress={() => processImage()}
+          />
+          <Button
+            title="nochmals eins aufnehmen"
+            onPress={() => setPhoto(null)}
+          />
         </View>
       ) : (
         <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
