@@ -1,3 +1,4 @@
+import util from "@/util";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { useRef, useState } from "react";
 import {
@@ -39,9 +40,14 @@ export default function App() {
     const formData = new FormData();
     formData.append("multipartFile", blob, "receipt.png");
 
+    const token = await util.getItemWithTTL("authToken");
+
     try {
       const response = await fetch("http://localhost:8080/api/ocr", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
