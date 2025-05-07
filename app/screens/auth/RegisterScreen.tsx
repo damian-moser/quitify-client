@@ -1,14 +1,30 @@
-import { useState } from "react";
-import { Button } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import util from "@/util";
+import { useAuth } from "@/components/AuthContext";
 
-const RegisterScreen = ({ navigation }) => {
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const RegisterScreen = () => {
+  const [displayName, setDisplayName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const router = useRouter();
+  const { refreshAuth } = useAuth();
 
+  useEffect(() => {
+    checkRoute();
+  }, []);
+
+  const checkRoute = async () => {
+    const token = await util.getItemWithTTL("authToken");
+    if (token) {
+      router.push("/");
+    }
+  };
+
+  const handleSubmit = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/sign-up", {
         method: "POST",
@@ -23,108 +39,100 @@ const RegisterScreen = ({ navigation }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Registrierung fehlgeschlagen");
+        const error = await response.text();
+        throw new Error(error);
       }
-      navigation.navigate("MainScreen");
+
+      const token = await response.text();
+      await util.storeItemWithTTL("authToken", token, 86400);
+      await refreshAuth();
+
+      setError("");
+      router.push("/");
     } catch (error) {
-      console.error("Fehler beim Register:", error);
-      alert("Registrieren fehlgeschlagen. Bitte überprüfe deine Eingaben.");
+      setError((error as Error).message);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Registrieren</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Benutzername"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            required
-            style={styles.input}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={styles.input}
-          />
-          <input
-            type="password"
-            placeholder="Passwort"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
-          <button type="submit" style={styles.button}>
-            Registrieren
-          </button>
-        </form>
-        <p style={styles.switchText}>
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Registrieren</Text>
+
+        <TextInput
+          placeholder="Benutzername"
+          value={displayName}
+          onChangeText={(text) => setDisplayName(text)}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={styles.input}
+          keyboardType="email-address"
+        />
+        <TextInput
+          placeholder="Passwort"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          style={styles.input}
+          secureTextEntry
+        />
+
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <Button title="Registrieren" onPress={handleSubmit} color="#28a745" />
+
+        <Text style={styles.switchText}>
           Bereits ein Konto?{" "}
           <Button
             title="Login"
-            onPress={() => navigation.navigate("LoginScreen")}
+            onPress={() => router.push("/screens/auth/LoginScreen")}
+            color="#007bff"
           />
-        </p>
-      </div>
-    </div>
+        </Text>
+      </View>
+    </View>
   );
 };
 
-export default RegisterScreen;
-
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
     backgroundColor: "#f3f4f6",
   },
   card: {
     backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    padding: 20,
+    borderRadius: 8,
+    width: 300,
     alignItems: "center",
-    width: "300px",
+    elevation: 5,
   },
   title: {
-    fontSize: "24px",
-    marginBottom: "20px",
+    fontSize: 24,
+    marginBottom: 20,
   },
   input: {
-    padding: "10px",
-    marginBottom: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "16px",
+    width: "100%",
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 4,
+    fontSize: 16,
   },
-  button: {
-    backgroundColor: "#28a745",
-    color: "white",
-    padding: "10px",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "16px",
-  },
-  switchText: {
-    marginTop: "10px",
-    fontSize: "14px",
-  },
-  link: {
-    background: "none",
-    border: "none",
-    color: "#007bff",
-    cursor: "pointer",
-    fontSize: "14px",
+  error: {
+    color: "#ff0000",
     fontWeight: "bold",
   },
-};
+  switchText: {
+    marginTop: 10,
+    fontSize: 14,
+  },
+});
+
+export default RegisterScreen;
