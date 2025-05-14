@@ -15,10 +15,16 @@ export default function Layout({ children }: { children: ReactNode }) {
         </Text>
         <View style={styles.buttonRow}>
           {isAuth ? (
-            <Button
-              title="Mein Profil"
-              onPress={() => router.push("/screens/Account/AccountScreen")}
-            />
+            <View style={styles.credentialsView}>
+              <Button
+                title="Meine Mailboxen"
+                onPress={() => router.push("/screens/mail/MailScreen")}
+              />
+              <Button
+                title="Mein Profil"
+                onPress={() => router.push("/screens/Account/AccountScreen")}
+              />
+            </View>
           ) : (
             <View style={styles.credentialsView}>
               <Button

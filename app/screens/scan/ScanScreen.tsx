@@ -1,6 +1,7 @@
 import util from "@/util";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import { useRef, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   StyleSheet,
@@ -15,6 +16,19 @@ export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [photo, setPhoto] = useState<string | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    checkRoute();
+  }, []);
+
+  const checkRoute = async () => {
+    const token = await util.getItemWithTTL("authToken");
+    if (!token) {
+      router.push("/");
+    }
+  };
 
   if (!permission) {
     return <View />;
@@ -52,7 +66,7 @@ export default function App() {
       });
 
       if (!response.ok) {
-        throw new Error("Fehlgeschlagen");
+        throw new Error("Ein Fehler ist aufgetreten");
       }
 
       const result = await response.json();
