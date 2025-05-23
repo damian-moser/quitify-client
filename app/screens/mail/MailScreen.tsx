@@ -1,4 +1,4 @@
-import util from "@/util";
+import util from "@/util"; // Token-Utility
 import { useEffect, useState } from "react";
 import {
   Button,
@@ -8,8 +8,9 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"; // für sicheres Layout auf iOS/Android
 
+// Email- und Mailbox-Interfaces (Typisierung)
 interface Email {
   from: string[];
   to: string[];
@@ -25,14 +26,16 @@ interface Mailbox {
 }
 
 export default function App() {
-  const [mails, setMails] = useState<Mailbox>();
-  const [username, setUsername] = useState<string>();
+  // State-Definition
+  const [mails, setMails] = useState<Mailbox>(); // E-Mails
+  const [username, setUsername] = useState<string>(); // Neues Konto
   const [password, setPassword] = useState<string>();
 
   useEffect(() => {
-    fetchAllMails();
+    fetchAllMails(); // Laden beim Start
   }, []);
 
+  // Holt alle E-Mails vom Server
   const fetchAllMails = async () => {
     const token = await util.getItemWithTTL("authToken");
 
@@ -49,13 +52,14 @@ export default function App() {
       }
 
       const result = await response.json();
-      setMails(result);
+      setMails(result); // Speichern in State
       console.log(result);
     } catch (error) {
       alert(error);
     }
   };
 
+  // Speichert ein neues Postfach (Email+Passwort Kombination)
   const createInbox = async () => {
     if (!username || !password) return;
 
@@ -78,7 +82,7 @@ export default function App() {
       }
 
       const result = await response.json();
-      console.log(result);
+      console.log(result); // Erfolgreiche Erstellung
     } catch (error) {
       alert(error);
     }
@@ -90,6 +94,7 @@ export default function App() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.headerText}>Alle Mails</Text>
 
+          {/* Eingabe für neues Postfach */}
           <View>
             <TextInput
               placeholder="Email"
@@ -108,6 +113,7 @@ export default function App() {
             <Button title="Neues Postfach speichern" onPress={createInbox} />
           </View>
 
+          {/* Liste aller geladenen E-Mails */}
           <View style={styles.mailList}>
             {mails ? (
               Object.entries(mails).map(([address, mailList]) =>
@@ -154,6 +160,7 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: {

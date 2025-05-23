@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import util from "@/util";
-import { useAuth } from "@/components/AuthContext";
+import { useRouter } from "expo-router"; // Navigation innerhalb der App
+import util from "@/util"; // Hilfsfunktionen wie Token-Handling
+import { useAuth } from "@/components/AuthContext"; // Zugriff auf Authentifizierungskontext
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  // Zustand für Benutzereingaben und Fehlernachricht
+  const [email, setEmail] = useState<string>(""); // Eingabe: Email/Username
+  const [password, setPassword] = useState<string>(""); // Eingabe: Passwort
+  const [error, setError] = useState<string>(""); // Anzeige von Fehlermeldungen
 
-  const router = useRouter();
-  const { refreshAuth } = useAuth();
+  const router = useRouter(); // Navigation
+  const { refreshAuth } = useAuth(); // Kontextfunktion zur Aktualisierung der Authentifizierung
 
   useEffect(() => {
-    checkRoute();
+    checkRoute(); // Wird einmal beim Laden der Komponente aufgerufen
   }, []);
 
+  // Überprüfung, ob der User bereits eingeloggt ist
   const checkRoute = async () => {
     const token = await util.getItemWithTTL("authToken");
     if (token) {
-      router.push("/");
+      router.push("/"); // Wenn Token vorhanden ist: Weiterleitung zur Startseite
     }
   };
 
+  // Login-Funktion: Senden der Zugangsdaten an das Backend
   const handleSubmit = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/sign-in", {
@@ -38,16 +41,17 @@ const LoginScreen = () => {
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(error);
+        throw new Error(error); // Fehlertext anzeigen, z.B. "Ungültige Anmeldedaten"
       }
 
-      const token = await response.text();
-      await util.storeItemWithTTL("authToken", token, 86400);
-      await refreshAuth();
+      const token = await response.text(); // Auth-Token auslesen
+      await util.storeItemWithTTL("authToken", token, 86400); // Token für 24h lokal speichern
+      await refreshAuth(); // Authentifizierungsstatus im Kontext aktualisieren
 
-      setError("");
-      router.push("/");
+      setError(""); // Vorherige Fehlermeldung löschen
+      router.push("/"); // Zur Hauptseite navigieren
     } catch (error) {
+      // Anzeige der Fehlermeldung an den Nutzer
       setError((error as Error).message);
     }
   };
@@ -57,6 +61,7 @@ const LoginScreen = () => {
       <View style={styles.card}>
         <Text style={styles.title}>Login</Text>
 
+        {/* Eingabefeld für Email */}
         <TextInput
           placeholder="Email"
           value={email}
@@ -64,6 +69,8 @@ const LoginScreen = () => {
           style={styles.input}
           keyboardType="email-address"
         />
+
+        {/* Eingabefeld für Passwort */}
         <TextInput
           placeholder="Passwort"
           value={password}
@@ -72,10 +79,13 @@ const LoginScreen = () => {
           secureTextEntry
         />
 
+        {/* Fehlermeldung */}
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
+        {/* Button zum Absenden der Login-Daten */}
         <Button title="Anmelden" onPress={handleSubmit} color="#007bff" />
 
+        {/* Navigation zur Registrierungsseite */}
         <Text style={styles.switchText}>
           Noch kein Konto?{" "}
           <Button
@@ -89,6 +99,7 @@ const LoginScreen = () => {
   );
 };
 
+// Styles für die Login-Komponente
 const styles = StyleSheet.create({
   container: {
     flex: 1,

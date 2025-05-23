@@ -70,7 +70,7 @@ export default function App() {
       }
 
       const result = await response.json();
-      console.log(result);
+      console.log(result); // Ergebnis der OCR-Analyse (z. B. Textinhalt)
     } catch (error) {
       alert(error);
     }

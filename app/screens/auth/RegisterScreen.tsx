@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import util from "@/util";
-import { useAuth } from "@/components/AuthContext";
+import { useRouter } from "expo-router"; // Für Seiten-Navigation
+import util from "@/util"; // Utilities (Token-Speicherung, TTL-Handling)
+import { useAuth } from "@/components/AuthContext"; // Globale Authentifizierung
 
 const RegisterScreen = () => {
-  const [displayName, setDisplayName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  // States für Eingabefelder und Fehlermeldungen
+  const [displayName, setDisplayName] = useState<string>(""); // Anzeigename
+  const [email, setEmail] = useState<string>(""); // Email/Username
+  const [password, setPassword] = useState<string>(""); // Passwort
+  const [error, setError] = useState<string>(""); // Fehlerausgabe
 
-  const router = useRouter();
-  const { refreshAuth } = useAuth();
+  const router = useRouter(); // Navigation
+  const { refreshAuth } = useAuth(); // Auth-Status aktualisieren nach Registrierung
 
   useEffect(() => {
-    checkRoute();
+    checkRoute(); // Beim Mount prüfen ob bereits eingeloggt
   }, []);
 
+  // Weiterleitung, wenn Token vorhanden ist
   const checkRoute = async () => {
     const token = await util.getItemWithTTL("authToken");
     if (token) {
-      router.push("/");
+      router.push("/"); // Direkt zur Startseite
     }
   };
 
+  // Registrierung absenden
   const handleSubmit = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/sign-up", {
@@ -32,25 +35,25 @@ const RegisterScreen = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          displayName: displayName,
-          username: email,
-          password: password,
+          displayName: displayName, // Anzeigename
+          username: email, // Benutzername ist gleich Email
+          password: password, // Passwort
         }),
       });
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(error);
+        throw new Error(error); // Fehler weitergeben
       }
 
-      const token = await response.text();
-      await util.storeItemWithTTL("authToken", token, 86400);
-      await refreshAuth();
+      const token = await response.text(); // Rückgabe: JWT-Token
+      await util.storeItemWithTTL("authToken", token, 86400); // Token lokal speichern
+      await refreshAuth(); // Auth-Kontext aktualisieren
 
-      setError("");
-      router.push("/");
+      setError(""); // Fehler zurücksetzen
+      router.push("/"); // Weiterleitung zur Startseite
     } catch (error) {
-      setError((error as Error).message);
+      setError((error as Error).message); // Fehler anzeigen
     }
   };
 
@@ -59,6 +62,7 @@ const RegisterScreen = () => {
       <View style={styles.card}>
         <Text style={styles.title}>Registrieren</Text>
 
+        {/* Eingabefelder für Benutzername, Email, Passwort */}
         <TextInput
           placeholder="Benutzername"
           value={displayName}
@@ -80,10 +84,13 @@ const RegisterScreen = () => {
           secureTextEntry
         />
 
+        {/* Fehleranzeige */}
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
+        {/* Button zum Registrieren */}
         <Button title="Registrieren" onPress={handleSubmit} color="#28a745" />
 
+        {/* Link zurück zur Login-Seite */}
         <Text style={styles.switchText}>
           Bereits ein Konto?{" "}
           <Button
@@ -97,6 +104,7 @@ const RegisterScreen = () => {
   );
 };
 
+// Styles für die Darstellung
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -110,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: 300,
     alignItems: "center",
-    elevation: 5,
+    elevation: 5, // Android-Shadow
   },
   title: {
     fontSize: 24,
