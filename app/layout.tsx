@@ -47,6 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 48,
     flex: 1,
   },
   credentialsView: {
