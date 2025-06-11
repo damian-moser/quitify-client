@@ -9,13 +9,26 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Modal,
+  Alert,
+  Pressable,
 } from "react-native";
+
+interface OcrResponse {
+  currency: string;
+  date: number;
+  name: string;
+  sum: number;
+  result: string;
+}
 
 export default function App() {
   const [facing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [photo, setPhoto] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState<OcrResponse>();
 
   const router = useRouter();
 
@@ -69,8 +82,10 @@ export default function App() {
         throw new Error("Ein Fehler ist aufgetreten");
       }
 
-      const result = await response.json();
+      const result: OcrResponse = await response.json();
       console.log(result);
+      setModalContent(result);
+      setModalVisible(true);
     } catch (error) {
       alert(error);
     }
@@ -115,6 +130,38 @@ export default function App() {
           </View>
         </CameraView>
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View>
+              <Text style={styles.modalHeader}>{modalContent?.name}</Text>
+              <Text style={styles.modalText}>
+                {modalContent?.currency} {modalContent?.sum}
+              </Text>
+              <Text style={styles.modalText}>
+                {new Date(
+                  modalContent?.date ? modalContent.date : new Date()
+                ).toDateString()}
+              </Text>
+              <Text style={styles.modalText}>{modalContent?.result}</Text>
+            </View>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Schliessen</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -146,5 +193,44 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "white",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    width: 512,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalHeader: {
+    marginBottom: 20,
+    fontSize: 24,
+  },
+  modalText: {
+    marginBottom: 15,
   },
 });
