@@ -8,7 +8,8 @@ const RegisterScreen = () => {
   const [displayName, setDisplayName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
 
   const router = useRouter();
   const { refreshAuth } = useAuth();
@@ -47,10 +48,16 @@ const RegisterScreen = () => {
       await util.storeItemWithTTL("authToken", token, 86400);
       await refreshAuth();
 
-      setError("");
+      setErrors({});
       router.push("/");
     } catch (error) {
-      setError((error as Error).message);
+      try {
+        setErrors(JSON.parse((error as Error).message));
+        setError("");
+      } catch (e) {
+        setError((error as Error).message);
+        setErrors({});
+      }
     }
   };
 
@@ -79,8 +86,12 @@ const RegisterScreen = () => {
           style={styles.input}
           secureTextEntry
         />
-
         {error ? <Text style={styles.error}>{error}</Text> : null}
+        {Object.entries(errors).map(([field, msg]) => (
+          <Text key={field} style={styles.error}>
+            {field}: {msg}
+          </Text>
+        ))}
 
         <Button title="Registrieren" onPress={handleSubmit} color="#28a745" />
 
