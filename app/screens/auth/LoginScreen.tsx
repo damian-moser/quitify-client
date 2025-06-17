@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import util from "@/util";
 import { useAuth } from "@/components/AuthContext";
+import { EXPO_API_URL } from "@env";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState<string>("");
@@ -26,7 +27,7 @@ const LoginScreen = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/sign-in", {
+      const response = await fetch(EXPO_API_URL + "auth/sign-in", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

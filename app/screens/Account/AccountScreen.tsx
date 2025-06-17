@@ -4,6 +4,7 @@ import util from "@/util";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { EXPO_API_URL } from "@env";
 
 export default function () {
   const [user, setUser] = useState<User>();
@@ -19,7 +20,7 @@ export default function () {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/me", {
+      const response = await fetch(EXPO_API_URL + "me", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +42,7 @@ export default function () {
     const token = await util.getItemWithTTL("authToken");
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/logout", {
+      const response = await fetch(EXPO_API_URL + "auth/logout", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -67,7 +68,6 @@ export default function () {
     <View style={styles.profileView}>
       <Text style={styles.profileText}>Guten Tag, {user?.displayName}</Text>
       <Text>{user?.username}</Text>
-      <br />
       <TouchableOpacity style={styles.button} onPress={() => handleLogout()}>
         <Text style={styles.buttonText}>Abmelden</Text>
       </TouchableOpacity>
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
+    marginTop: 12,
     backgroundColor: "#ff0000",
     padding: 12,
     borderRadius: 8,

@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { EXPO_API_URL } from "@env";
 
 interface Email {
   from: string[];
@@ -37,7 +38,7 @@ export default function App() {
     const token = await util.getItemWithTTL("authToken");
 
     try {
-      const response = await fetch("http://localhost:8080/api/email", {
+      const response = await fetch(EXPO_API_URL + "email", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -64,7 +65,7 @@ export default function App() {
     const data = { username: username, password: password };
 
     try {
-      const response = await fetch("http://localhost:8080/api/email", {
+      const response = await fetch(EXPO_API_URL + "email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

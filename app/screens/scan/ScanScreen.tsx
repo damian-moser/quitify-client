@@ -13,6 +13,7 @@ import {
   Alert,
   Pressable,
 } from "react-native";
+import { EXPO_API_URL } from "@env";
 
 interface OcrResponse {
   currency: string;
@@ -61,16 +62,17 @@ export default function App() {
   const processImage = async () => {
     if (!photo) return;
 
-    const response = await fetch(photo);
-    const blob = await response.blob();
-
     const formData = new FormData();
-    formData.append("multipartFile", blob, "receipt.png");
+    formData.append("multipartFile", {
+      uri: photo,
+      name: "receipt.jpg",
+      type: "image/jpeg",
+    } as any);
 
     const token = await util.getItemWithTTL("authToken");
 
     try {
-      const response = await fetch("http://localhost:8080/api/ocr", {
+      const response = await fetch(EXPO_API_URL + "ocr", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -93,15 +95,18 @@ export default function App() {
 
   const takePhoto = async () => {
     if (cameraRef.current) {
-      const picture = await cameraRef.current.takePictureAsync({
-        quality: 1,
-        base64: true,
-        exif: true,
-      });
-      if (picture && picture.uri) {
-        setPhoto(picture.uri);
-      } else {
-        console.warn("Failed to take picture or picture has no URI.");
+      try {
+        const picture = await cameraRef.current.takePictureAsync({
+          quality: 1,
+        });
+
+        if (picture && picture.uri) {
+          setPhoto(picture.uri); // ✅ direkt verwendbar für FormData
+        } else {
+          console.warn("Kein Bild URI erhalten.");
+        }
+      } catch (err) {
+        console.error("Fehler beim Fotografieren:", err);
       }
     }
   };
@@ -154,7 +159,7 @@ export default function App() {
               <Text style={styles.modalText}>{modalContent?.result}</Text>
             </View>
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
             >
               <Text style={styles.textStyle}>Schliessen</Text>
@@ -210,7 +215,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    width: 512,
+    width: "auto",
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
